@@ -50,13 +50,13 @@ Eigen::Vector3d vel_drone_fcu_target;
 //Target accel of the drone [from fcu]
 Eigen::Vector3d accel_drone_fcu_target;
 
-
 Eigen::Vector3d gimbal_att_deg;
+
 //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>函数声明<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 void printf_info();                                                                       //打印函数
+
 //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>回调函数<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-void att_target_cb(const mavros_msgs::AttitudeTarget::ConstPtr& msg)
-{
+void att_target_cb(const mavros_msgs::AttitudeTarget::ConstPtr& msg){
     q_fcu_target = Eigen::Quaterniond(msg->orientation.w, msg->orientation.x, msg->orientation.y, msg->orientation.z);
 
     //Transform the Quaternion to euler Angles
@@ -66,24 +66,24 @@ void att_target_cb(const mavros_msgs::AttitudeTarget::ConstPtr& msg)
 
     Thrust_target = - msg->thrust;
 }
-void pos_target_cb(const mavros_msgs::PositionTarget::ConstPtr& msg)
-{
+
+void pos_target_cb(const mavros_msgs::PositionTarget::ConstPtr& msg){
     pos_drone_fcu_target = Eigen::Vector3d(msg->position.x, msg->position.y, msg->position.z);
 
     vel_drone_fcu_target = Eigen::Vector3d(msg->velocity.x, msg->velocity.y, msg->velocity.z);
 
     accel_drone_fcu_target = Eigen::Vector3d(msg->acceleration_or_force.x, msg->acceleration_or_force.y, msg->acceleration_or_force.z);
 }
-void log_control_cb(const prometheus_msgs::LogMessageControl::ConstPtr& msg)
-{
+
+void log_control_cb(const prometheus_msgs::LogMessageControl::ConstPtr& msg){
     control_type = msg->control_type;
     _DroneState = msg->Drone_State;
     Command_Now = msg->Control_Command;
     _AttitudeReference = msg->Attitude_Reference;
     ref_pose = msg->ref_pose;
 }
-void landpad_det_cb(const prometheus_msgs::DetectionInfo::ConstPtr &msg)
-{
+
+void landpad_det_cb(const prometheus_msgs::DetectionInfo::ConstPtr &msg){
     detection_info = *msg;
 
     // 识别算法发布的目标位置位于相机坐标系（从相机往前看，物体在相机右方x为正，下方y为正，前方z为正）
@@ -93,8 +93,8 @@ void landpad_det_cb(const prometheus_msgs::DetectionInfo::ConstPtr &msg)
     detection_info.position[2] = - msg->position[2];
 
 }
-void gimbal_att_cb(const geometry_msgs::Quaternion::ConstPtr& msg)
-{
+
+void gimbal_att_cb(const geometry_msgs::Quaternion::ConstPtr& msg){
     Eigen::Quaterniond gimbal_att_quat;
 
     gimbal_att_quat = Eigen::Quaterniond(msg->w, msg->x, msg->y, msg->z);
@@ -107,13 +107,12 @@ void gimbal_att_cb(const geometry_msgs::Quaternion::ConstPtr& msg)
 }
 
 //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>主 函 数<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv){
     ros::init(argc, argv, "ground_station");
     ros::NodeHandle nh("~");
 
     // 参数读取
-    nh.param<float>("refresh_time", refresh_time, 1.0);
+    nh.param<float>("refresh_time", refresh_time, 0.02);
     // 根据任务类型 订阅不同话题,打印不同话题
     // 
     nh.param<int>("mission_type", mission_type, 0);
@@ -129,8 +128,7 @@ int main(int argc, char **argv)
     // 【订阅】 本话题来自飞控(通过Mavros功能包 /plugins/setpoint_raw.cpp读取), 对应Mavlink消息为POSITION_TARGET_LOCAL_NED, 对应的飞控中的uORB消息为vehicle_local_position_setpoint.msg
     ros::Subscriber position_target_sub = nh.subscribe<mavros_msgs::PositionTarget>("/mavros/setpoint_raw/target_local", 10, pos_target_cb);
 
-    if(mission_type == 1)
-    {
+    if(mission_type == 1){
         ros::Subscriber landpad_det_sub = nh.subscribe<prometheus_msgs::DetectionInfo>("/prometheus/object_detection/ellipse_det", 10, landpad_det_cb);
     }
 
@@ -142,8 +140,7 @@ int main(int argc, char **argv)
 
 
 //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>Main Loop<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-    while(ros::ok())
-    {
+    while(ros::ok()){
         //回调一次 更新传感器状态
         ros::spinOnce();
 
@@ -153,11 +150,9 @@ int main(int argc, char **argv)
     }
 
     return 0;
-
 }
 
-void printf_info()
-{
+void printf_info(){
     cout <<">>>>>>>>>>>>>>>>>>>>>>>> Ground Station  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<" <<endl;
     //固定的浮点显示
     cout.setf(ios::fixed);
@@ -177,8 +172,7 @@ void printf_info()
     prometheus_station_utils::printf_command_control(Command_Now);
 
     // 【打印】控制模块消息
-    if(control_type == PX4_POS_CONTROLLER)
-    {
+    if(control_type == PX4_POS_CONTROLLER){
         //打印期望位姿
         prometheus_station_utils::prinft_ref_pose(ref_pose);
         prometheus_station_utils::prinft_attitude_reference(_AttitudeReference);
@@ -188,14 +182,12 @@ void printf_info()
         cout << "Att_target [R P Y] : " << euler_fcu_target[0] * 180/M_PI <<" [deg]  "<<euler_fcu_target[1] * 180/M_PI << " [deg]  "<< euler_fcu_target[2] * 180/M_PI<<" [deg]  "<<endl;
         
         cout << "Thr_target [ 0-1 ] : " << Thrust_target <<endl;
-    }else if(control_type == PX4_SENDER)
-    {
+    }else if(control_type == PX4_SENDER){
         cout <<">>>>>>>>>>>>>>>>>>>>> Target Info from PX4 <<<<<<<<<<<<<<<<<<<<<<<<<<<<" <<endl;
         cout << "Pos_target [X Y Z] : " << pos_drone_fcu_target[0] << " [ m ] "<< pos_drone_fcu_target[1]<<" [ m ] "<<pos_drone_fcu_target[2]<<" [ m ] "<<endl;
         cout << "Vel_target [X Y Z] : " << vel_drone_fcu_target[0] << " [m/s] "<< vel_drone_fcu_target[1]<<" [m/s] "<<vel_drone_fcu_target[2]<<" [m/s] "<<endl;
         // cout << "Acc_target [X Y Z] : " << accel_drone_fcu_target[0] << " [m/s^2] "<< accel_drone_fcu_target[1]<<" [m/s^2] "<<accel_drone_fcu_target[2]<<" [m/s^2] "<<endl;
-    }else if(control_type == PX4_GEO_CONTROLLER)
-    {
+    }else if(control_type == PX4_GEO_CONTROLLER){
         cout <<">>>>>>>>>>>>>>>>>>>>>>>> Target Info FCU <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<" <<endl;
         
         cout << "Bodyrate_target [R P Y] : " << bodyrate_fcu_target[0] * 180/M_PI <<" [deg/s]  "<<bodyrate_fcu_target[1] * 180/M_PI << " [deg/s]  "<< bodyrate_fcu_target[2] * 180/M_PI<<" [deg/s]  "<<endl;
@@ -203,13 +195,9 @@ void printf_info()
         cout << "Thr_target [ 0-1 ] : " << Thrust_target <<endl; 
     }
 
-    if(Command_Now.Mode == prometheus_msgs::ControlCommand::Move)
-    {
-        
-        
+    if(Command_Now.Mode == prometheus_msgs::ControlCommand::Move){
         //Only for TRAJECTORY tracking
-        if(Command_Now.Reference_State.Move_mode == prometheus_msgs::PositionReference::TRAJECTORY)
-        {
+        if(Command_Now.Reference_State.Move_mode == prometheus_msgs::PositionReference::TRAJECTORY){
             cout <<">>>>>>>>>>>>>>>>>>>>>>>> Tracking Error <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<" <<endl;
 
             static Eigen::Vector3d tracking_error;
@@ -217,33 +205,23 @@ void printf_info()
             cout << "Pos_error [m]: " << tracking_error[0] <<endl;
             cout << "Vel_error [m/s]: " << tracking_error[1] <<endl;
         }
-        
     }
 
     // 【打印】视觉模块消息
-    if(mission_type == 1)
-    {
+    if(mission_type == 1){
         // 降落任务
         cout << ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>Vision State<<<<<<<<<<<<<<<<<<<<<<<<<<" <<endl;
-        if(detection_info.detected)
-        {
+        if(detection_info.detected){
             cout << "is_detected: ture" <<endl;
-        }else
-        {
+        }else{
             cout << "is_detected: false" <<endl;
         }
         
         cout << "detection_result (body): " << detection_info.position[0] << " [m] "<< detection_info.position[1] << " [m] "<< detection_info.position[2] << " [m] "<<endl;
     }
 
-    if(gimbal_enable)
-    {
+    if(gimbal_enable){
         cout << ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>Gimbal State<<<<<<<<<<<<<<<<<<<<<<<<<<" <<endl;
         cout << "Gimbal_att    : " << gimbal_att_deg[0] << " [deg] "<< gimbal_att_deg[1] << " [deg] "<< gimbal_att_deg[2] << " [deg] "<<endl;
     }
-
-
-
-
-
 }

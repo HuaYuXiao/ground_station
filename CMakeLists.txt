@@ -77,9 +77,9 @@ add_dependencies(ground_station_msg prometheus_station_gencpp)
 target_link_libraries(ground_station_msg ${catkin_LIBRARIES})
 
 ##ground_station_aruco.cpp
-add_executable(ground_station_aruco src/ground_station_aruco.cpp)
-add_dependencies(ground_station_aruco prometheus_station_gencpp)
-target_link_libraries(ground_station_aruco ${catkin_LIBRARIES})
+#add_executable(ground_station_aruco src/ground_station_aruco.cpp)
+#add_dependencies(ground_station_aruco prometheus_station_gencpp)
+#target_link_libraries(ground_station_aruco ${catkin_LIBRARIES})
 
 # add_executable(sender_ground_station src/sender_ground_station.cpp)
 # add_dependencies(sender_ground_station prometheus_station_gencpp)
