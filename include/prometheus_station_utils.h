@@ -10,6 +10,7 @@
 
 #include <Eigen/Eigen>
 #include <math.h>
+#include <string>
 #include <prometheus_msgs/Message.h>
 #include <prometheus_msgs/ControlCommand.h>
 #include <prometheus_msgs/SwarmCommand.h>
@@ -40,8 +41,7 @@ enum MISSION_TYPE
 };
 
 // 打印上层控制指令  
-void printf_command_control(const prometheus_msgs::ControlCommand& _ControlCommand)
-{
+void printf_command_control(const prometheus_msgs::ControlCommand& _ControlCommand){
     cout <<">>>>>>>>>>>>>>>>>>>>>>>> Control Command <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<" <<endl;
 
     //固定的浮点显示
@@ -57,14 +57,14 @@ void printf_command_control(const prometheus_msgs::ControlCommand& _ControlComma
 
     cout << "Source: [ "<< _ControlCommand.source << " ]  Command_ID: "<< _ControlCommand.Command_ID <<endl;
 
-    switch(_ControlCommand.Mode)
-    {
+        string move_mode = "undefined";
+        string move_frame = "undefined";
+
+        switch(_ControlCommand.Mode){
         case prometheus_msgs::ControlCommand::Idle:
-            if(_ControlCommand.Reference_State.yaw_ref == 999)
-            {
+            if(_ControlCommand.Reference_State.yaw_ref == 999){
                 cout << "Command: [ Idle + Arming + OFFBOARD ] " <<endl;
-            }else
-            {
+            }else{
                 cout << "Command: [ Idle ] " <<endl;
             }
             
@@ -83,66 +83,52 @@ void printf_command_control(const prometheus_msgs::ControlCommand& _ControlComma
             break;
 
         case prometheus_msgs::ControlCommand::Move:
-            if(_ControlCommand.Reference_State.Move_mode == prometheus_msgs::PositionReference::XYZ_POS)
-            {
-                cout << "Command: [ Move ] Move_mode: [ XYZ_POS ] " <<endl;
-            }else if(_ControlCommand.Reference_State.Move_mode == prometheus_msgs::PositionReference::XY_POS_Z_VEL)
-            {
-                cout << "Command: [ Move ] Move_mode: [ XY_POS_Z_VEL ] " <<endl;
-            }else if(_ControlCommand.Reference_State.Move_mode == prometheus_msgs::PositionReference::XY_VEL_Z_POS)
-            {
-                cout << "Command: [ Move ] Move_mode: [ XY_VEL_Z_POS ] " <<endl;
-            }else if(_ControlCommand.Reference_State.Move_mode == prometheus_msgs::PositionReference::XYZ_VEL)
-            {
-                cout << "Command: [ Move ] Move_mode: [ XYZ_VEL ] " <<endl;
-            }else if(_ControlCommand.Reference_State.Move_mode == prometheus_msgs::PositionReference::TRAJECTORY)
-            {
-                cout << "Command: [ Move ] Move_mode: [ TRAJECTORY ] " <<endl;
+            if(_ControlCommand.Reference_State.Move_mode == prometheus_msgs::PositionReference::XYZ_POS){
+                move_mode = "XYZ_POS";
+            }else if(_ControlCommand.Reference_State.Move_mode == prometheus_msgs::PositionReference::XY_POS_Z_VEL){
+                move_mode = "XY_POS_Z_VEL";
+            }else if(_ControlCommand.Reference_State.Move_mode == prometheus_msgs::PositionReference::XY_VEL_Z_POS){
+                move_mode = "XY_VEL_Z_POS";
+            }else if(_ControlCommand.Reference_State.Move_mode == prometheus_msgs::PositionReference::XYZ_VEL){
+                move_mode = "XYZ_VEL";
+            }else if(_ControlCommand.Reference_State.Move_mode == prometheus_msgs::PositionReference::TRAJECTORY){
+                move_mode = "TRAJECTORY";
             }else if(_ControlCommand.Reference_State.Move_mode == prometheus_msgs::PositionReference::POS_VEL_ACC) {
-                cout << "Command: [ Move ] Move_mode: [ POS_VEL_ACC ] " << endl;
-            }else{
-                cout << "Command: [ Move ] Move_mode: [ UNDEFINED ] " <<endl;
+                move_mode = "POS_VEL_ACC";
             }
 
-            if(_ControlCommand.Reference_State.Move_frame == prometheus_msgs::PositionReference::ENU_FRAME)
-            {
-                cout << "Move_frame: [ ENU_FRAME ] " <<endl;
-            }else if(_ControlCommand.Reference_State.Move_frame == prometheus_msgs::PositionReference::BODY_FRAME)
-            {
-                cout << "Move_frame: [ BODY_FRAME ] " <<endl;
-            }else{
-                cout << "Move_frame: [ UNDEFINED ] " <<endl;
+            if(_ControlCommand.Reference_State.Move_frame == prometheus_msgs::PositionReference::ENU_FRAME){
+                move_frame = "ENU_FRAME";
+            }else if(_ControlCommand.Reference_State.Move_frame == prometheus_msgs::PositionReference::BODY_FRAME){
+                move_frame = "BODY_FRAME";
             }
 
-            cout << "Position [X Y Z] : " << _ControlCommand.Reference_State.position_ref[0] <<
-            _ControlCommand.Reference_State.position_ref[1]<<
-            _ControlCommand.Reference_State.position_ref[2]<< endl;
-            cout << "Velocity [X Y Z] : " << _ControlCommand.Reference_State.velocity_ref[0] <<
-            _ControlCommand.Reference_State.velocity_ref[1]<<
-            _ControlCommand.Reference_State.velocity_ref[2]<< endl;
-            cout << "Acceleration [X Y Z] : " << _ControlCommand.Reference_State.acceleration_ref[0] <<
-            _ControlCommand.Reference_State.acceleration_ref[1]<<
-            _ControlCommand.Reference_State.acceleration_ref[2]<< endl;
-            cout << "Yaw : "  << _ControlCommand.Reference_State.yaw_ref* 180/M_PI << endl;
+            cout << "Command: [Move]; Move_frame: [" << move_frame << "]; Move_mode: [" << move_mode << "]" << endl;
+
+            cout << "POS " << _ControlCommand.Reference_State.position_ref[0] << " " <<
+                            _ControlCommand.Reference_State.position_ref[1] << " " <<
+                            _ControlCommand.Reference_State.position_ref[2] << endl;
+            cout << "VEL " << _ControlCommand.Reference_State.velocity_ref[0] << " " <<
+                            _ControlCommand.Reference_State.velocity_ref[1] << " " <<
+                            _ControlCommand.Reference_State.velocity_ref[2]<< endl;
+            cout << "ACC " << _ControlCommand.Reference_State.acceleration_ref[0] << " " <<
+                            _ControlCommand.Reference_State.acceleration_ref[1] << " " <<
+                            _ControlCommand.Reference_State.acceleration_ref[2]<< endl;
+            cout << "Yaw "  << _ControlCommand.Reference_State.yaw_ref* 180/M_PI << endl;
 
             break;
 
         case prometheus_msgs::ControlCommand::Disarm:
             cout << "Command: [ Disarm ] " <<endl;
-            break;
 
-        default:
-            cout << "Command: [ Undefined ] " <<endl;
             break;
     }
 
+    cout << endl;
 }
 
-
-
 // 打印无人机状态
-void prinft_drone_state(const prometheus_msgs::DroneState& _Drone_state)
-{
+void prinft_drone_state(const prometheus_msgs::DroneState& _Drone_state){
     cout <<">>>>>>>>>>>>>>>>>>>>>>>>   Drone State   <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<" <<endl;
 
     //固定的浮点显示
@@ -190,15 +176,24 @@ void prinft_drone_state(const prometheus_msgs::DroneState& _Drone_state)
 
     cout << "[ " << _Drone_state.mode<<" ] " <<endl;
 
-    cout << "Position [X Y Z] : " << _Drone_state.position[0] << " [ m ] "<< _Drone_state.position[1]<<" [ m ] "<<_Drone_state.position[2]<<" [ m ] "<<endl;
-    cout << "Velocity [X Y Z] : " << _Drone_state.velocity[0] << " [m/s] "<< _Drone_state.velocity[1]<<" [m/s] "<<_Drone_state.velocity[2]<<" [m/s] "<<endl;
-    cout << "Attitude [R P Y] : " << _Drone_state.attitude[0] * 180/M_PI <<" [deg] "<<_Drone_state.attitude[1] * 180/M_PI << " [deg] "<< _Drone_state.attitude[2] * 180/M_PI<<" [deg] "<<endl;
-    cout << "Att_rate [R P Y] : " << _Drone_state.attitude_rate[0] * 180/M_PI <<" [deg/s] "<<_Drone_state.attitude_rate[1] * 180/M_PI << " [deg/s] "<< _Drone_state.attitude_rate[2] * 180/M_PI<<" [deg/s] "<<endl;
+    cout << "POS " << _Drone_state.position[0] << " "<<
+                    _Drone_state.position[1]<<" "<<
+                    _Drone_state.position[2]<< endl;
+    cout << "VEL " << _Drone_state.velocity[0] << " [m/s] "<<
+                    _Drone_state.velocity[1]<<" [m/s] "<<
+                    _Drone_state.velocity[2]<<" [m/s] "<<endl;
+    cout << "Attitude [R P Y] : " << _Drone_state.attitude[0] * 180/M_PI <<" [deg] "<<
+                                    _Drone_state.attitude[1] * 180/M_PI << " [deg] "<<
+                                    _Drone_state.attitude[2] * 180/M_PI<<" [deg] "<<endl;
+    cout << "Att_rate [R P Y] : " << _Drone_state.attitude_rate[0] * 180/M_PI <<" [deg/s] "<<
+                                    _Drone_state.attitude_rate[1] * 180/M_PI << " [deg/s] "<<
+                                    _Drone_state.attitude_rate[2] * 180/M_PI<<" [deg/s] "<<endl;
+
+        cout << endl;
 }
 
 // 打印位置控制器输出结果
-void prinft_attitude_reference(const prometheus_msgs::AttitudeReference& _AttitudeReference)
-{
+void prinft_attitude_reference(const prometheus_msgs::AttitudeReference& _AttitudeReference){
     //固定的浮点显示
     cout.setf(ios::fixed);
     //setprecision(n) 设显示小数精度为n位
@@ -210,8 +205,12 @@ void prinft_attitude_reference(const prometheus_msgs::AttitudeReference& _Attitu
     // 强制显示符号
     cout.setf(ios::showpos);
 
-    cout << "Attitude_sp [R P Y]  : " << _AttitudeReference.desired_attitude[0] * 180/M_PI <<" [deg]  "<<_AttitudeReference.desired_attitude[1] * 180/M_PI << " [deg]  "<< _AttitudeReference.desired_attitude[2] * 180/M_PI<<" [deg] "<<endl;
+    cout << "Attitude_sp [R P Y]  : " << _AttitudeReference.desired_attitude[0] * 180/M_PI <<" [deg]  "<<
+                                        _AttitudeReference.desired_attitude[1] * 180/M_PI << " [deg]  "<<
+                                        _AttitudeReference.desired_attitude[2] * 180/M_PI<<" [deg] "<<endl;
     cout << "Throttle_sp [ 0-1 ]  : " << _AttitudeReference.desired_throttle <<endl;
+
+        cout << endl;
 }
 
 // tracking error
@@ -230,9 +229,7 @@ Eigen::Vector3d tracking_error(const prometheus_msgs::DroneState& _Drone_state, 
     return error;
 }
 
-
-void prinft_ref_pose(const geometry_msgs::PoseStamped& ref_pose)
-{
+void prinft_ref_pose(const geometry_msgs::PoseStamped& ref_pose){
     cout <<">>>>>>>>>>>>>>>>>>>>>>> Ref Pose <<<<<<<<<<<<<<<<<<<<<<<<<<<<" <<endl;
 
     //固定的浮点显示
@@ -246,11 +243,12 @@ void prinft_ref_pose(const geometry_msgs::PoseStamped& ref_pose)
     // 强制显示符号
     cout.setf(ios::showpos);
       
-    cout << "Ref_position [X Y Z] : " << ref_pose.pose.position.x <<" [m] "<< ref_pose.pose.position.y <<" [m] " << ref_pose.pose.position.z <<" [m] "<<endl;
+    cout << "Ref_position [X Y Z] : " << ref_pose.pose.position.x <<" "<<
+    ref_pose.pose.position.y <<" " <<
+    ref_pose.pose.position.z << endl;
+
+    cout << endl;
 }
-
-
-
 
 //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> 其 他 函 数 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< 
 
@@ -262,6 +260,7 @@ float get_time_in_sec(const ros::Time& begin_time)
     float currTimenSec = time_now.nsec / 1e9 - begin_time.nsec / 1e9;
     return (currTimeSec + currTimenSec);
 }
+
 // 将四元数转换至(roll,pitch,yaw)  by a 3-2-1 intrinsic Tait-Bryan rotation sequence
 // https://en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles
 // q0 q1 q2 q3
@@ -280,7 +279,5 @@ Eigen::Vector3d quaternion_to_euler(const Eigen::Quaterniond &q)
     ans[2] = atan2(2.0 * (quat[3] * quat[0] + quat[1] * quat[2]), 1.0 - 2.0 * (quat[2] * quat[2] + quat[3] * quat[3]));
     return ans;
 }
-
-
 }
 #endif

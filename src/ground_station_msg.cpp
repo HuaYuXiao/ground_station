@@ -1,6 +1,5 @@
 //头文件
 #include <ros/ros.h>
-
 //msg 头文件
 #include <mavros_msgs/CommandBool.h>
 #include <mavros_msgs/SetMode.h>
@@ -49,15 +48,13 @@ int main(int argc, char **argv)
     ros::Subscriber kcf_det_sub = nh.subscribe<prometheus_msgs::Message>("/prometheus/message/kcf_det", 10, msg_det_cb);
 
     // 频率
-    ros::Rate rate(1.0);
-
+    ros::Rate rate(50);
 
 //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>Main Loop<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
     while(ros::ok())
     {
         //回调一次 更新传感器状态
         ros::spinOnce();
-
 
         rate.sleep();
     }
