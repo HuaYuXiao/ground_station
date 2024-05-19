@@ -1,13 +1,7 @@
 <launch>
-    <arg name="launch_prefix" default="gnome-terminal --tab --"/>
+    <!-- run the ground_station.cpp -->
+    <node pkg="prometheus_station" type="ground_station" name="ground_station" output="screen" launch-prefix="gnome-terminal --"/>
 
-    <group ns="prometheus_station">
-        <!-- run the ground_station.cpp -->
-        <node pkg="prometheus_station" type="ground_station" name="ground_station" output="screen" launch-prefix="$(arg launch_prefix)">
-        </node>
-
-        <!-- run the ground_station_msg.cpp -->
-        <node pkg="prometheus_station" type="ground_station_msg" name="ground_station_msg" output="screen" launch-prefix="$(arg launch_prefix)">
-        </node>
-    </group>
+    <!-- run the ground_station_msg.cpp -->
+    <node pkg="prometheus_station" type="ground_station_msg" name="ground_station_msg" output="screen"/>
 </launch>
