@@ -15,7 +15,7 @@ catkin_make install --source Modules/EasonDrone_Station --build Modules/EasonDro
 - v1.2.0:
   - support `POS_VEL_ACC` move mode
   - catch invalid input with `UNDEFINED`
-- v1.0.1: support `launch`
+- v1.0.1: add support for `launch`
 
 
 ## Acknowledgement
