@@ -15,19 +15,19 @@ using namespace std;
 //---------------------------------------相关参数-----------------------------------------------
 
 //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>回调函数<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-void msg_main_cb(const prometheus_msgs::Message::ConstPtr& msg)
+void msg_main_cb(const easondrone_msgs::Message::ConstPtr& msg)
 {
-    prometheus_msgs::Message message = *msg;
+    easondrone_msgs::Message message = *msg;
     printf_message(message);
 }
-void msg_planning_cb(const prometheus_msgs::Message::ConstPtr& msg)
+void msg_planning_cb(const easondrone_msgs::Message::ConstPtr& msg)
 {
-    prometheus_msgs::Message message = *msg;
+    easondrone_msgs::Message message = *msg;
     printf_message(message);
 }
-void msg_det_cb(const prometheus_msgs::Message::ConstPtr& msg)
+void msg_det_cb(const easondrone_msgs::Message::ConstPtr& msg)
 {
-    prometheus_msgs::Message message = *msg;
+    easondrone_msgs::Message message = *msg;
     printf_message(message);
 }
 //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>主 函 数<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -37,15 +37,15 @@ int main(int argc, char **argv)
     ros::NodeHandle nh("~");
 
     // 【订阅】 各类消息
-    ros::Subscriber message_main_sub = nh.subscribe<prometheus_msgs::Message>("/prometheus/message/main", 10, msg_planning_cb);
-    ros::Subscriber message_local_planner_sub = nh.subscribe<prometheus_msgs::Message>("/prometheus/message/local_planner", 10, msg_planning_cb);
-    ros::Subscriber message_global_planner_sub = nh.subscribe<prometheus_msgs::Message>("/prometheus/message/global_planner", 10, msg_planning_cb);
-    ros::Subscriber message_fast_planner_sub = nh.subscribe<prometheus_msgs::Message>("/prometheus/message/fast_planner", 10, msg_planning_cb);
+    ros::Subscriber message_main_sub = nh.subscribe<easondrone_msgs::Message>("/message/main", 10, msg_planning_cb);
+    ros::Subscriber message_local_planner_sub = nh.subscribe<easondrone_msgs::Message>("/message/local_planner", 10, msg_planning_cb);
+    ros::Subscriber message_global_planner_sub = nh.subscribe<easondrone_msgs::Message>("/message/global_planner", 10, msg_planning_cb);
+    ros::Subscriber message_fast_planner_sub = nh.subscribe<easondrone_msgs::Message>("/message/fast_planner", 10, msg_planning_cb);
 
-    ros::Subscriber num_det_sub = nh.subscribe<prometheus_msgs::Message>("/prometheus/message/num_det", 10, msg_det_cb);
-    ros::Subscriber circle_det_sub = nh.subscribe<prometheus_msgs::Message>("/prometheus/message/circle_det", 10, msg_det_cb);
-    ros::Subscriber pad_det_sub = nh.subscribe<prometheus_msgs::Message>("/prometheus/message/landpad_det", 10, msg_det_cb);
-    ros::Subscriber kcf_det_sub = nh.subscribe<prometheus_msgs::Message>("/prometheus/message/kcf_det", 10, msg_det_cb);
+    ros::Subscriber num_det_sub = nh.subscribe<easondrone_msgs::Message>("/message/num_det", 10, msg_det_cb);
+    ros::Subscriber circle_det_sub = nh.subscribe<easondrone_msgs::Message>("/message/circle_det", 10, msg_det_cb);
+    ros::Subscriber pad_det_sub = nh.subscribe<easondrone_msgs::Message>("/message/landpad_det", 10, msg_det_cb);
+    ros::Subscriber kcf_det_sub = nh.subscribe<easondrone_msgs::Message>("/message/kcf_det", 10, msg_det_cb);
 
     // 频率
     ros::Rate rate(50);

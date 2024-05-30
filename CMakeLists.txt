@@ -20,7 +20,7 @@ find_package(catkin REQUIRED COMPONENTS
   tf2_ros
   tf2_eigen
   mavros_msgs
-  prometheus_msgs
+        easondrone_msgs
 )
 
 ## System dependencies are found with CMake's conventions
@@ -58,21 +58,21 @@ include_directories(
 
 ##ground_station.cpp
 add_executable(ground_station src/ground_station.cpp)
-add_dependencies(ground_station prometheus_station_gencpp)
+add_dependencies(ground_station ${PROJECT_NAME}_gencpp)
 target_link_libraries(ground_station ${catkin_LIBRARIES})
 
 ##ground_station_msg.cpp
 add_executable(ground_station_msg src/ground_station_msg.cpp)
-add_dependencies(ground_station_msg prometheus_station_gencpp)
+add_dependencies(ground_station_msg ${PROJECT_NAME}_gencpp)
 target_link_libraries(ground_station_msg ${catkin_LIBRARIES})
 
 ## Mark cpp header files for installation
-install(DIRECTORY include/${PROJECT_NAME}/
+install(DIRECTORY include/${PROJECT_NAME}
   DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
   FILES_MATCHING PATTERN "*.h"
 )
 
 ## Mark other files for installation (e.g. launch and bag files, etc.)
-install(DIRECTORY launch/
+install(DIRECTORY launch
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/launch
 )

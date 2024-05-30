@@ -23,4 +23,3 @@ catkin_make install --source Modules/EasonDrone_Station --build Modules/EasonDro
 Thanks to following packages:
 
 - [prometheus_station](https://github.com/amov-lab/Prometheus/Modules/ground_station)
-

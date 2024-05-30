@@ -1,26 +1,27 @@
 //头文件
 #include <ros/ros.h>
-#include <prometheus_station_utils.h>
+#include <station_utils.h>
 #include "control_common.h"
 //msg 头文件
-#include <prometheus_msgs/ArucoInfo.h>
-#include <prometheus_msgs/MultiArucoInfo.h>
+#include <easondrone_msgs/ArucoInfo.h>
+#include <easondrone_msgs/MultiArucoInfo.h>
 
 using namespace std;
 //---------------------------------------相关参数-----------------------------------------------
 float refresh_time;
 int mission_type;
 
-prometheus_msgs::ArucoInfo aruco_info;
-prometheus_msgs::MultiArucoInfo multi_aruco_info;
+easondrone_msgs::ArucoInfo aruco_info;
+easondrone_msgs::MultiArucoInfo multi_aruco_info;
 
-prometheus_msgs::DroneState _DroneState;    // 无人机状态
+easondrone_msgs::DroneState _DroneState;    // 无人机状态
 bool get_drone_pos = false;
 Eigen::Vector3d mav_pos_;
 Eigen::Vector3d aruco_pos_enu;
 Eigen::Matrix3f R_Body_to_ENU,R_camera_to_body;              // 无人机机体系至惯性系转换矩阵
+
 //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>回调函数<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-void aruco_cb(const prometheus_msgs::ArucoInfo::ConstPtr& msg)
+void aruco_cb(const easondrone_msgs::ArucoInfo::ConstPtr& msg)
 {
     aruco_info = *msg;
 
@@ -33,11 +34,13 @@ void aruco_cb(const prometheus_msgs::ArucoInfo::ConstPtr& msg)
         aruco_pos_enu[2] = mav_pos_[2] - aruco_info.position[2] - 0.1;
     }
 }
-void multi_aruco_cb(const prometheus_msgs::MultiArucoInfo::ConstPtr& msg)
+
+void multi_aruco_cb(const easondrone_msgs::MultiArucoInfo::ConstPtr& msg)
 {
     multi_aruco_info = *msg;
 }
-void drone_state_cb(const prometheus_msgs::DroneState::ConstPtr& msg)
+
+void drone_state_cb(const easondrone_msgs::DroneState::ConstPtr& msg)
 {
     _DroneState = *msg;
     
@@ -46,6 +49,7 @@ void drone_state_cb(const prometheus_msgs::DroneState::ConstPtr& msg)
     mav_pos_ << _DroneState.position[0],_DroneState.position[1],_DroneState.position[2];
 }
 void printf_info();                                                                       //打印函数
+
 //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>主 函 数<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 int main(int argc, char **argv)
 {
@@ -58,13 +62,13 @@ int main(int argc, char **argv)
     nh.param<int>("mission_type", mission_type, 0);
 
     // 【订阅】
-    ros::Subscriber aruco_sub = nh.subscribe<prometheus_msgs::ArucoInfo>("/prometheus/object_detection/aruco_det", 10, aruco_cb);
+    ros::Subscriber aruco_sub = nh.subscribe<easondrone_msgs::ArucoInfo>("/easondrone/object_detection/aruco_det", 10, aruco_cb);
     
     // 【订阅】
-    ros::Subscriber multi_aruco_sub = nh.subscribe<prometheus_msgs::MultiArucoInfo>("/prometheus/object_detection/multi_aruco_det", 10, multi_aruco_cb);
+    ros::Subscriber multi_aruco_sub = nh.subscribe<easondrone_msgs::MultiArucoInfo>("/easondrone/object_detection/multi_aruco_det", 10, multi_aruco_cb);
     
     //【订阅】无人机状态
-    ros::Subscriber drone_state_sub = nh.subscribe<prometheus_msgs::DroneState>("/prometheus/drone_state", 10, drone_state_cb);
+    ros::Subscriber drone_state_sub = nh.subscribe<easondrone_msgs::DroneState>("/easondrone/drone_state", 10, drone_state_cb);
     // 频率
     float hz = 1.0 / refresh_time;
     ros::Rate rate(hz);
@@ -129,5 +133,4 @@ void printf_info()
             cout << "Pos [enu]   : "<< multi_aruco_pos_enu[0]       << " [m] "<< multi_aruco_pos_enu[1]       << " [m] "<< multi_aruco_pos_enu[2]       << " [m] "<<endl;
         }
     }
-
 }

@@ -1,9 +1,9 @@
 /***************************************************************************************************************************
-* prometheus_station_utils.h
+* station_utils.h
 *
 * Author: Qyp
-*
-* Update Time: 2019.7.6
+* Maintainer: Eason Hua
+* Update Time: 2024.05.30
 ***************************************************************************************************************************/
 #ifndef PROMETHEUS_STATION_UTILS_H
 #define PROMETHEUS_STATION_UTILS_H
@@ -11,17 +11,17 @@
 #include <Eigen/Eigen>
 #include <math.h>
 #include <string>
-#include <prometheus_msgs/Message.h>
-#include <prometheus_msgs/ControlCommand.h>
-#include <prometheus_msgs/SwarmCommand.h>
-#include <prometheus_msgs/DroneState.h>
-#include <prometheus_msgs/PositionReference.h>
-#include <prometheus_msgs/AttitudeReference.h>
-#include <prometheus_msgs/ControlOutput.h>
-#include <prometheus_msgs/LogMessageControl.h>
-#include <prometheus_msgs/LogMessageDetection.h>
-#include <prometheus_msgs/LogMessagePlanning.h>
-#include <prometheus_msgs/DetectionInfo.h>
+#include <easondrone_msgs/Message.h>
+#include <easondrone_msgs/ControlCommand.h>
+#include <easondrone_msgs/SwarmCommand.h>
+#include <easondrone_msgs/DroneState.h>
+#include <easondrone_msgs/PositionReference.h>
+#include <easondrone_msgs/AttitudeReference.h>
+#include <easondrone_msgs/ControlOutput.h>
+#include <easondrone_msgs/LogMessageControl.h>
+#include <easondrone_msgs/LogMessageDetection.h>
+#include <easondrone_msgs/LogMessagePlanning.h>
+#include <easondrone_msgs/DetectionInfo.h>
 #include <nav_msgs/Odometry.h>
 #include <nav_msgs/Path.h>
 
@@ -29,7 +29,7 @@ using namespace std;
 
 #define NUM_POINT 2
 
-namespace prometheus_station_utils 
+namespace station_utils
 {
 // 五种状态机
 enum MISSION_TYPE
@@ -41,7 +41,7 @@ enum MISSION_TYPE
 };
 
 // 打印上层控制指令  
-void printf_command_control(const prometheus_msgs::ControlCommand& _ControlCommand){
+void printf_command_control(const easondrone_msgs::ControlCommand& _ControlCommand){
     cout <<">>>>>>>>>>>>>>>>>>>>>>>> Control Command <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<" <<endl;
 
     //固定的浮点显示
@@ -61,7 +61,7 @@ void printf_command_control(const prometheus_msgs::ControlCommand& _ControlComma
         string move_frame = "undefined";
 
         switch(_ControlCommand.Mode){
-        case prometheus_msgs::ControlCommand::Idle:
+        case easondrone_msgs::ControlCommand::Idle:
             if(_ControlCommand.Reference_State.yaw_ref == 999){
                 cout << "Command: [ Idle + Arming + OFFBOARD ] " <<endl;
             }else{
@@ -70,36 +70,36 @@ void printf_command_control(const prometheus_msgs::ControlCommand& _ControlComma
             
             break;
 
-        case prometheus_msgs::ControlCommand::Takeoff:
+        case easondrone_msgs::ControlCommand::Takeoff:
             cout << "Command: [ Takeoff ] " <<endl;
             break;
 
-        case prometheus_msgs::ControlCommand::Hold:
+        case easondrone_msgs::ControlCommand::Hold:
             cout << "Command: [ Hold ] " <<endl;
             break;
 
-        case prometheus_msgs::ControlCommand::Land:
+        case easondrone_msgs::ControlCommand::Land:
             cout << "Command: [ Land ] " <<endl;
             break;
 
-        case prometheus_msgs::ControlCommand::Move:
-            if(_ControlCommand.Reference_State.Move_mode == prometheus_msgs::PositionReference::XYZ_POS){
+        case easondrone_msgs::ControlCommand::Move:
+            if(_ControlCommand.Reference_State.Move_mode == easondrone_msgs::PositionReference::XYZ_POS){
                 move_mode = "XYZ_POS";
-            }else if(_ControlCommand.Reference_State.Move_mode == prometheus_msgs::PositionReference::XY_POS_Z_VEL){
+            }else if(_ControlCommand.Reference_State.Move_mode == easondrone_msgs::PositionReference::XY_POS_Z_VEL){
                 move_mode = "XY_POS_Z_VEL";
-            }else if(_ControlCommand.Reference_State.Move_mode == prometheus_msgs::PositionReference::XY_VEL_Z_POS){
+            }else if(_ControlCommand.Reference_State.Move_mode == easondrone_msgs::PositionReference::XY_VEL_Z_POS){
                 move_mode = "XY_VEL_Z_POS";
-            }else if(_ControlCommand.Reference_State.Move_mode == prometheus_msgs::PositionReference::XYZ_VEL){
+            }else if(_ControlCommand.Reference_State.Move_mode == easondrone_msgs::PositionReference::XYZ_VEL){
                 move_mode = "XYZ_VEL";
-            }else if(_ControlCommand.Reference_State.Move_mode == prometheus_msgs::PositionReference::TRAJECTORY){
+            }else if(_ControlCommand.Reference_State.Move_mode == easondrone_msgs::PositionReference::TRAJECTORY){
                 move_mode = "TRAJECTORY";
-            }else if(_ControlCommand.Reference_State.Move_mode == prometheus_msgs::PositionReference::POS_VEL_ACC) {
+            }else if(_ControlCommand.Reference_State.Move_mode == easondrone_msgs::PositionReference::POS_VEL_ACC) {
                 move_mode = "POS_VEL_ACC";
             }
 
-            if(_ControlCommand.Reference_State.Move_frame == prometheus_msgs::PositionReference::ENU_FRAME){
+            if(_ControlCommand.Reference_State.Move_frame == easondrone_msgs::PositionReference::ENU_FRAME){
                 move_frame = "ENU_FRAME";
-            }else if(_ControlCommand.Reference_State.Move_frame == prometheus_msgs::PositionReference::BODY_FRAME){
+            }else if(_ControlCommand.Reference_State.Move_frame == easondrone_msgs::PositionReference::BODY_FRAME){
                 move_frame = "BODY_FRAME";
             }
 
@@ -118,7 +118,7 @@ void printf_command_control(const prometheus_msgs::ControlCommand& _ControlComma
 
             break;
 
-        case prometheus_msgs::ControlCommand::Disarm:
+        case easondrone_msgs::ControlCommand::Disarm:
             cout << "Command: [ Disarm ] " <<endl;
 
             break;
@@ -128,7 +128,7 @@ void printf_command_control(const prometheus_msgs::ControlCommand& _ControlComma
 }
 
 // 打印无人机状态
-void prinft_drone_state(const prometheus_msgs::DroneState& _Drone_state){
+void prinft_drone_state(const easondrone_msgs::DroneState& _Drone_state){
     cout <<">>>>>>>>>>>>>>>>>>>>>>>>   Drone State   <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<" <<endl;
 
     //固定的浮点显示
@@ -193,7 +193,7 @@ void prinft_drone_state(const prometheus_msgs::DroneState& _Drone_state){
 }
 
 // 打印位置控制器输出结果
-void prinft_attitude_reference(const prometheus_msgs::AttitudeReference& _AttitudeReference){
+void prinft_attitude_reference(const easondrone_msgs::AttitudeReference& _AttitudeReference){
     //固定的浮点显示
     cout.setf(ios::fixed);
     //setprecision(n) 设显示小数精度为n位
@@ -214,7 +214,7 @@ void prinft_attitude_reference(const prometheus_msgs::AttitudeReference& _Attitu
 }
 
 // tracking error
-Eigen::Vector3d tracking_error(const prometheus_msgs::DroneState& _Drone_state, const prometheus_msgs::ControlCommand& _ControlCommand)
+Eigen::Vector3d tracking_error(const easondrone_msgs::DroneState& _Drone_state, const easondrone_msgs::ControlCommand& _ControlCommand)
 {
     Eigen::Vector3d error;
 
