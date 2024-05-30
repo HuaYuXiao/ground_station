@@ -2,17 +2,17 @@
 * ground_station_info.cpp
 *
 * Author: Qyp
+* Maintainer: Eason Hua
+* Update Time: 2024.05.30
 *
-* Update Time: 2020.12.15
-*
-* Introduction:  Prometheus 数据信息地面站 
+* Introduction:  EasonDrone 数据信息地面站
 *         1. 根据不同任务选择打印不同消息
 *         2. 一般配合SSH使用,本程序运行于地面电脑
 *         3. 带宽不足时,请降低本程序运行频率
 ***************************************************************************************************************************/
 //头文件
 #include <ros/ros.h>
-#include <prometheus_station_utils.h>
+#include <station_utils.h>
 #include "control_common.h"
 //msg 头文件
 #include <mavros_msgs/CommandBool.h>

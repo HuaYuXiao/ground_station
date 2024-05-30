@@ -1,16 +1,18 @@
 <?xml version="1.0"?>
 <package format="2">
-  <name>prometheus_station</name>
+  <name>easondrone_station</name>
   <version>1.2.0</version>
   <description>
-    The prometheus_station package
+    The easondrone_station package
   </description>
-  <maintainer email="hyx020222@gmail.com">Eason Hua</maintainer>
+
+  <maintainer email="12010508@mail.sustech.edu.cn">Eason Hua</maintainer>
   <author email="fatmoonqyp@126.com">Yuhua Qi</author>
+
   <license>Apache</license>
 
   <url type="website">http://www.amovlab.com/</url>
-  <url type="repository">https://github.com/HuaYuXiao/ground_station.git</url>
+  <url type="repository">https://github.com/HuaYuXiao/EasonDrone_Station.git</url>
 
   <buildtool_depend>catkin</buildtool_depend>
 
@@ -21,6 +23,5 @@
   <exec_depend>message_runtime</exec_depend>
 
   <export>
-
   </export>
 </package>

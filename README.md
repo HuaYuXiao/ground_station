@@ -1,25 +1,26 @@
-# prometheus_station
+# EasonDrone_Station
 
-The prometheus_station package, modified from [prometheus_station](https://github.com/amov-lab/Prometheus/tree/v1.1/Modules/ground_station)
-
-
-## Release Note
-
-- v1.2.0: 
-  - support `POS_VEL_ACC` move mode
-  - catch invalid input with `UNDEFINED`
-- v1.0.1: support `launch`
+The easondrone_station package
 
 
 ## Compilation
 
 ```bash
-catkin_make install --source Modules/ground_station --build build/ground_station
+catkin_make install --source Modules/EasonDrone_Station --build Modules/EasonDrone_Station/build
 ```
 
 
-## Launch
+## Release Note
 
-```bash
-roslaunch ground_station simulation.launch
-```
+- v1.2.0:
+  - support `POS_VEL_ACC` move mode
+  - catch invalid input with `UNDEFINED`
+- v1.0.1: support `launch`
+
+
+## Acknowledgement
+
+Thanks to following packages:
+
+- [prometheus_station](https://github.com/amov-lab/Prometheus/Modules/ground_station)
+
